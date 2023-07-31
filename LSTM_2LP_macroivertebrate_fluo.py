@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_addons as tfa
 
-data = pd.read_csv(r"Ksenobiotici_makroinvertebrate.csv",encoding='latin-1')
+data = pd.read_csv(r"../Ksenobiotici_makroinvertebrate.csv",encoding='latin-1')
 X = data.iloc[2:,[79,80,64,76,89,88,83]].values  
 y = data.iloc[2:,[170,164]].values 
 X=X.astype("float32")
