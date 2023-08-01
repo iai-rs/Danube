@@ -72,7 +72,7 @@ y_test=y[test_index]
 vocab_size = 20000  # Only consider the top 20k words
 maxlen = 200  # Only consider the first 200 words of each movie review
 embed_dim = 32  # Embedding size for each token
-num_heads = 2  # Number of attention heads
+num_heads = 10  # Number of attention heads
 ff_dim = 32  # Hidden layer size in feed forward network inside transformer
 
 inputs = layers.Input(shape=(maxlen,))

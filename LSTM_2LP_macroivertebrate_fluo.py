@@ -34,7 +34,7 @@ import matplotlib.pyplot as plt
 
 # define the model
 model = Sequential()
-model.add(LSTM(10))
+model.add(LSTM(20))
 #model.add(Dense(8, activation='sigmoid'))
 model.add(Dense(12, activation='sigmoid'))
 model.add(Dense(30, activation='sigmoid'))
