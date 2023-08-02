@@ -50,7 +50,10 @@ data = pd.read_csv(r"../Ksenobiotici_makroinvertebrate.csv",encoding='latin-1')
 #y = data.iloc[2:,[170,164]].values 
 ## Bromacil
 X = data.iloc[2:,[73,69,68,70,72,58,60,91]].values  
-y = data.iloc[2:,166].values 
+y = data.iloc[2:,[166]].values 
+## Bentazone
+#X = data.iloc[2:,[64,45,89,88,83,107,90,93,91]].values  
+#y = data.iloc[2:,[169]].values 
 
 X=X.astype("float32")
 y=y.astype("float32")
