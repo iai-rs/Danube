@@ -45,8 +45,13 @@ class TokenAndPositionEmbedding(layers.Layer):
         return x + positions
 
 data = pd.read_csv(r"../Ksenobiotici_makroinvertebrate.csv",encoding='latin-1')
-X = data.iloc[2:,[79,80,64,76,89,88,83]].values  
-y = data.iloc[2:,[170,164]].values 
+## Fluoranthene & 2.4 D 
+#X = data.iloc[2:,[79,80,64,76,89,88,83]].values  
+#y = data.iloc[2:,[170,164]].values 
+## Bromacil
+X = data.iloc[2:,[73,69,68,70,72,58,60,91]].values  
+y = data.iloc[2:,166].values 
+
 X=X.astype("float32")
 y=y.astype("float32")
 
@@ -69,11 +74,11 @@ X_test=X[test_index,:]
 y_train=y[train_index]
 y_test=y[test_index]
 
-vocab_size = 20000  # Only consider the top 20k words
-maxlen = 200  # Only consider the first 200 words of each movie review
-embed_dim = 32  # Embedding size for each token
-num_heads = 10  # Number of attention heads
-ff_dim = 32  # Hidden layer size in feed forward network inside transformer
+vocab_size = 10 # 20000  # Only consider the top 20k words
+maxlen = 20 # Only consider the first 200 words 
+embed_dim = 22 # 32  # Embedding size for each token
+num_heads = 4 # 10  # Number of attention heads
+ff_dim = 32 # 32  # Hidden layer size in feed forward network inside transformer
 
 inputs = layers.Input(shape=(maxlen,))
 embedding_layer = TokenAndPositionEmbedding(maxlen, vocab_size, embed_dim)
@@ -82,22 +87,25 @@ x = embedding_layer(inputs)
 
 # define the model
 model = Sequential()
-#model.add(LSTM(10))
 inputs = Input(shape=(maxlen,))
 embedding_layer = TokenAndPositionEmbedding(maxlen, vocab_size, embed_dim)
 transformer_block = TransformerBlock(embed_dim, num_heads, ff_dim)
 x = transformer_block(x)
-x = GlobalAveragePooling1D()(x)
+#x = GlobalAveragePooling1D()(x)
 #model.add(Dense(8, activation='sigmoid'))
-model.add(Dense(12, activation='sigmoid'))
-model.add(Dense(30, activation='sigmoid'))
+#model.add(Dense(12, activation='sigmoid'))
+#model.add(Dense(30, activation='sigmoid'))
 model.add(Dense(2, activation='linear'))
 
 tf.random.set_seed(12345)
 model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(0.001))
 #learning rate 0.001
+## T(10) => MSE = 0.0172
+## T(05) => MSE = 3.6691e-05
+## T(03) => MSE = 4.1896e-05
+## T(04) => MSE = 3.9311e-05
 
-history=model.fit(X_train, y_train, epochs=200, batch_size=10, verbose=1, validation_split = 0.2)
+history=model.fit(X_train, y_train, epochs=2000, batch_size=10, verbose=1, validation_split = 0.2)
 
 hist = pd.DataFrame(history.history)#beleži obuku po epohama
 hist['epoch'] = history.epoch

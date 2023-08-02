@@ -4,8 +4,13 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 
 data = pd.read_csv(r"../Ksenobiotici_makroinvertebrate.csv",encoding='latin-1')
-X = data.iloc[2:,[79,80,64,76,89,88,83]].values  
-y = data.iloc[2:,[170,164]].values 
+## Fluoranthene & 2.4 D
+#X = data.iloc[2:,[79,80,64,76,89,88,83]].values  
+#y = data.iloc[2:,[170,164]].values 
+## Bromacil
+X = data.iloc[2:,[73,69,68,70,72,58,60,91]].values  
+y = data.iloc[2:,166].values 
+
 X=X.astype("float32")
 y=y.astype("float32")
 
@@ -34,15 +39,27 @@ import matplotlib.pyplot as plt
 
 # define the model
 model = Sequential()
-model.add(LSTM(20))
+model.add(LSTM(2))
 #model.add(Dense(8, activation='sigmoid'))
-model.add(Dense(12, activation='sigmoid'))
-model.add(Dense(30, activation='sigmoid'))
+#model.add(Dense(12, activation='sigmoid'))
+#model.add(Dense(30, activation='sigmoid'))
 model.add(Dense(2, activation='linear'))
 
 tf.random.set_seed(12345)
 model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(0.001))
 #learning rate 0.001
+### Fluoro + D
+## LSTM(20) => MSE = 0.0025
+## LSTM(30) => MSE = 0.0045
+## LSTM(10) => MSE = 0.0010
+## LSTM(05) => MSE = 1.1112e-04
+## LSTM(04) => MSE = 1.3198e-04
+## LSTM(03) => MSE = 0.0013
+## LSTM(02) => MSE = 2.5672e-05
+## LSTM(01) => MSE = 0.0067
+### Bromacil 
+##MSE = 7.3138e-04
+
 
 history=model.fit(X_train, y_train, epochs=200, batch_size=10, verbose=1, validation_split = 0.2)
 
