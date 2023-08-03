@@ -10,6 +10,8 @@ from keras.layers import LSTM
 from keras.layers import GlobalAveragePooling1D
 from keras.layers import Input
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.metrics import mean_squared_error
 
 class TransformerBlock(layers.Layer):
     def __init__(self, embed_dim, num_heads, ff_dim, rate=0.1):
@@ -45,40 +47,47 @@ class TokenAndPositionEmbedding(layers.Layer):
         return x + positions
 
 data = pd.read_csv(r"../Ksenobiotici_makroinvertebrate.csv",encoding='latin-1')
-## Fluoranthene & 2.4 D 
-#X = data.iloc[2:,[79,80,64,76,89,88,83]].values  
-#y = data.iloc[2:,[170,164]].values 
-## Bromacil
-X = data.iloc[2:,[73,69,68,70,72,58,60,91]].values  
-y = data.iloc[2:,[166]].values 
-## Bentazone
-#X = data.iloc[2:,[64,45,89,88,83,107,90,93,91]].values  
-#y = data.iloc[2:,[169]].values 
+## print("Bromacil")
+#X = data.iloc[2:,[73,69,68,70,72,58,60,91]].values
+#y = data.iloc[2:,[166]].values
+# print("2.4 D")
+#X = data.iloc[2:,[64,55,93,111,116,35,161,162]].values
+#y = data.iloc[2:,[164]].values
+# print("Fluoranthene")
+#X = data.iloc[2:,[79,80,64,76,89,88,83]].values
+#y = data.iloc[2:,[170]].values
+print("Fluoranthene & 2.4 D")
+X = data.iloc[2:,[79,80,64,76,89,88,83]].values
+y = data.iloc[2:,[170,164]].values
+# print("Bentazone")
+#X = data.iloc[2:,[64,45,89,88,83,107,90,93,91]].values
+#y = data.iloc[2:,[169]].values
 
 X=X.astype("float32")
 y=y.astype("float32")
 
 ## logging
 ##print(X)
-print(X.shape)
+#print(X.shape)
 ##print (y)
-print(y.shape)
-print(len(y))
-
+#print(y.shape)
+#print(len(y))
 
 train_index=np.arange(0, X.shape[0])#train index all indexes
-test_index= np.random.randint(0, X.shape[0],2)#nasumice uzima 10 za test
-train_index=np.setdiff1d(train_index, test_index)# novi train indeks bez testa
+test_index= np.random.randint(0, X.shape[0],2)#randomly takes 2 for the test
+train_index=np.setdiff1d(train_index, test_index)# new train index no test
 
 ## adding one more dimension to the dataset for LSTM
-X = X.reshape(len(X), 1, X.shape[1])
-X_train=X[train_index,:]#sve vrednosti iz train seta
+# X = X.reshape(len(X), 1, X.shape[1])
+
+X_train=X[train_index,:]#all values from train sets
 X_test=X[test_index,:]
 y_train=y[train_index]
 y_test=y[test_index]
 
+## Transformer setup
 vocab_size = 10 # 20000  # Only consider the top 20k words
-maxlen = 20 # Only consider the first 200 words 
+maxlen = 20 # Only consider the first 200 words
 embed_dim = 22 # 32  # Embedding size for each token
 num_heads = 4 # 10  # Number of attention heads
 ff_dim = 32 # 32  # Hidden layer size in feed forward network inside transformer
@@ -86,7 +95,6 @@ ff_dim = 32 # 32  # Hidden layer size in feed forward network inside transformer
 inputs = layers.Input(shape=(maxlen,))
 embedding_layer = TokenAndPositionEmbedding(maxlen, vocab_size, embed_dim)
 x = embedding_layer(inputs)
-
 
 # define the model
 model = Sequential()
@@ -120,3 +128,39 @@ plt.xlabel('Epoch')
 plt.ylabel('Error [Bromacil]')
 plt.legend()
 plt.grid(True)
+
+## MSE
+# assume model and test set data are already defined
+# predict output on test set
+y_pred = model.predict(X_test)
+# calculate MSE
+mse = mean_squared_error(y_test, y_pred)
+# print the result
+print("MSE=", mse)
+
+## Bromacil 
+# 0.0016031095
+# 0.0007343807
+# 0.00079466205
+## 2.4 D
+# 5.346842e-05
+# 0.00094745524
+# 1.2133169e-06
+## Fluoranthene
+# 0.011734403
+# 1.3080283e-06
+# 5.024851e-05
+## Bentazone
+# 4.885224e-06
+# 0.0011014686
+# 0.0024358723
+## Fluoranthene & 2.4 D
+# 2.2093518e-06
+# 7.484535e-05
+# 0.0003871812
+
+
+
+
+
+ 
