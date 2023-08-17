@@ -1,36 +1,30 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-# Replace these lists with your actual MSE values for each model
-mse_4lp = [0.0125, 0.0001, 0.0004, 1.45e-5 , 0.0012]
-mse_lstm = [0.0017592615, 1.36419485e-05, 0.0037221021, 3.5156765e-05, 1.6001328e-05]
-mse_transformer = [0.0007946620, 5.346842e-05, 5.024851e-05, 7.484535e-05, 0.0011014686]
+species = ("Bromacil", "2.4D", "F", "2.4D&F", "Bentazone")
+penguin_means = {
+    '4LP': (0.0125, 0.0001, 0.0004, 1.45E-05, 0.0012),
+    'LSTM': (0.0017592615,	1.36E-05,	0.0037221021,	3.52E-05,	1.60E-05),
+    'Transformer': (0.000794662,	5.35E-05,	5.02E-05,	7.48E-05,	0.0011014686),
+}
 
-# Create separate histograms for each model
-plt.figure(figsize=(10, 6))
+x = np.arange(len(species))  # the label locations
+width = 0.25  # the width of the bars
+multiplier = 0
 
-#plt.hist(mse_4lp, bins=15, alpha=0.9, label='4LP')
-#plt.hist(mse_lstm, bins=15, alpha=0.9, label='LSTM')
-#plt.hist(mse_transformer, bins=15, alpha=0.9, label='Transformer')
+fig, ax = plt.subplots(layout='constrained')
 
-#plt.xlabel('Mean Squared Error (MSE)')
-#plt.ylabel('Frequency')
-#plt.title('Histogram of MSE Values for Different Models')
-#plt.legend()
-#plt.grid(True)
+for attribute, measurement in penguin_means.items():
+    offset = width * multiplier
+    rects = ax.bar(x + offset, measurement, width, label=attribute)
+    ax.bar_label(rects, padding=3)
+    multiplier += 1
 
-mean_mse_4lp = mse_4lp[0]
-mean_mse_lstm = mse_lstm[0]
-mean_mse_transformer = mse_transformer[0]
-
-models = ['4LP', 'LSTM', 'Transformer']
-mean_mse_values = [mse_4lp, mse_lstm, mse_transformer]
-
-plt.bar(models, mse_4lp, density=True, color=['blue', 'black', 'yellow'])
-
-plt.xlabel('Model Type')
-plt.ylabel('Mean Squared Error (MSE)')
-plt.title('Mean MSE Values for Different Models')
-plt.grid(True)
+# Add some text for labels, title and custom x-axis tick labels, etc.
+ax.set_ylabel('MSE')
+ax.set_title('ANN MSE accordung to substance')
+ax.set_xticks(x + width, species)
+ax.legend(loc='upper left', ncols=3)
+#ax.set_ylim(0, 250)
 
 plt.show()
